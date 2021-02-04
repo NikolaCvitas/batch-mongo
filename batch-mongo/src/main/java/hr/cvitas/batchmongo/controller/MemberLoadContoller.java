@@ -1,5 +1,7 @@
 package hr.cvitas.batchmongo.controller;
 
+import hr.cvitas.batchmongo.model.Event;
+import hr.cvitas.batchmongo.repository.EventRepository;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
@@ -9,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,12 +27,19 @@ public class MemberLoadContoller {
     @Autowired
     Job job;
 
+    @Autowired
+    EventRepository eventRepository;
+
+    public static String eve_id = null;
 
     @GetMapping
     public BatchStatus load() throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
 
+        long current_time = System.currentTimeMillis();
+
         Map<String, JobParameter> maps = new HashMap<>();
-        maps.put("time", new JobParameter(System.currentTimeMillis()));
+        maps.put("time", new JobParameter(current_time));
+        maps.put("eve_id", new JobParameter(getEve_id("LOAD MEMBERS","LOAD MEMBERS").concat("-").concat(String.valueOf(current_time))));
         JobParameters parameters = new JobParameters(maps);
         JobExecution jobExecution = jobLauncher.run(job,parameters);
 
@@ -41,6 +52,33 @@ public class MemberLoadContoller {
 
         return jobExecution.getStatus();
 
+    }
+
+    public String getEve_id(String code, String description){
+
+        Event event = new Event();
+
+        UUID uuid = getUUID();
+
+        event.setId(uuid);
+        event.setUuid(uuid);
+        event.setCode(code);
+        event.setDescription(description);
+        event.setCreated_date(System.currentTimeMillis());
+
+        eventRepository.save(event);
+
+        String eve_id = null;
+        if(event.getUuid() !=null){
+            eve_id = event.getUuid().toString();
+        }
+
+        return eve_id;
+    }
+
+    private UUID getUUID(){
+        UUID uuid=UUID.randomUUID();
+        return uuid;
     }
 
 }

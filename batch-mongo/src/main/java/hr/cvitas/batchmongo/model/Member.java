@@ -20,6 +20,7 @@ public class Member {
     private String city;
     private String postal_code;
     private String country;
+    private String eve_id;
 
     public Member() {
     }
@@ -118,6 +119,15 @@ public class Member {
         this.country = country;
     }
 
+    public String getEve_id() {
+        return eve_id;
+    }
+
+    public void setEve_id(String eve_id) {
+        this.eve_id = eve_id;
+    }
+
+
     @Override
     public String toString() {
         return "Member{" +
@@ -131,6 +141,7 @@ public class Member {
                 ", city='" + city + '\'' +
                 ", postal_code='" + postal_code + '\'' +
                 ", country='" + country + '\'' +
+                ", eve_id='" + eve_id + '\'' +
                 '}';
     }
 }
